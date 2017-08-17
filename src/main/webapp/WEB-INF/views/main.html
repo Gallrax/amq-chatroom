@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="application/javascript" src="/js/jquery-1.4.2.min.js"></script>
+    <script type="application/javascript" src="/js/amq_jquery_adapter.js"></script>
+    <script type="application/javascript" src="/js/amq.js"></script>
+    <script type="application/javascript">
+        var amq = org.activemq.Amq;
+        var id = new Date().getTime();
+        amq.init({
+            uri: 'amq',
+            logging: true,
+            timeout: 20,
+            clientId:id
+        });
+
+        var myHandler = function (message) {
+            $("#home").append(message);
+            $("#home").append("<br/>");
+        };
+        /*
+         var myHandler =
+         {
+         rcvMessage: function(message)
+         {
+         alert("received "+message);
+         }
+         };*/
+
+        amq.addListener("", "topic://testTopic", myHandler);
+
+        function send() {
+            var nickname = $("#nickname").val();
+            var content = $("#content").val();
+            var msg = nickname + " : " + content;
+            amq.sendMessage("topic://testTopic", msg);
+        }
+    </script>
+</head>
+<body>
+This is test mq !
+<div id="home">
+</div>
+<div>
+    昵称 ：<input type="text" id="nickname"/>
+    内容 ：<input type="text" id="content"/>
+    发送 ：<input type="button" onclick="send()" value="发送"/>
+</div>
+</body>
+</html>
